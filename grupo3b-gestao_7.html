@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grupo 3B — Gestão de Pendências</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --cream:   #F7F4EE;
+  --warm:    #EDE8DF;
+  --border:  #D8D2C7;
+  --border2: #C8C1B4;
+  --ink:     #1A1714;
+  --ink2:    #3D3830;
+  --muted:   #8A8278;
+  --light:   #B5AFA6;
+  --accent:  #1B3A5C;
+  --accent2: #2D5F8A;
+  --gold:    #B8913A;
+  --gold2:   #D4A84B;
+  --red:     #8B2E2E;
+  --red-bg:  #F5ECEC;
+  --green:   #2A5C3F;
+  --green-bg:#EBF3EE;
+  --blue:    #1B3A5C;
+  --blue-bg: #EBF0F5;
+  --amber:   #7A5C1E;
+  --amber-bg:#F5F0E5;
+  --gray-bg: #EEEBE6;
+
+  --font-serif: 'DM Serif Display', Georgia, serif;
+  --font-sans:  'DM Sans', system-ui, sans-serif;
+  --shadow-sm: 0 1px 3px rgba(26,23,20,.06), 0 1px 2px rgba(26,23,20,.04);
+  --shadow-md: 0 4px 16px rgba(26,23,20,.08), 0 2px 6px rgba(26,23,20,.05);
+  --shadow-lg: 0 12px 40px rgba(26,23,20,.12), 0 4px 12px rgba(26,23,20,.08);
+  --radius: 2px;
+}
+
+html { font-size: 15px; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  line-height: 1.5;
+}
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: 220px;
+  background: var(--ink);
+  display: flex;
+  flex-direction: column;
+  z-index: 50;
+  padding: 0;
+}
+
+.sidebar-logo {
+  padding: 28px 24px 24px;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.logo-diamond {
+  width: 32px; height: 32px;
+  background: var(--gold);
+  transform: rotate(45deg);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.logo-diamond span {
+  transform: rotate(-45deg);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  font-family: var(--font-sans);
+}
+
+.logo-name {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: #fff;
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.logo-sub {
+  font-size: 0.65rem;
+  color: rgba(255,255,255,.35);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-top: 6px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  padding: 20px 0;
+}
+
+.nav-section {
+  padding: 0 16px;
+  margin-bottom: 24px;
+}
+
+.nav-label {
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.25);
+  padding: 0 8px;
+  margin-bottom: 6px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  color: rgba(255,255,255,.5);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  margin-bottom: 2px;
+  text-decoration: none;
+}
+
+.nav-item:hover { color: rgba(255,255,255,.85); background: rgba(255,255,255,.06); }
+.nav-item.active { color: #fff; background: rgba(255,255,255,.1); }
+.nav-item.active .nav-icon { color: var(--gold); }
+
+.nav-icon { font-size: 0.9rem; width: 16px; text-align: center; }
+
+.sidebar-footer {
+  padding: 16px 24px;
+  border-top: 1px solid rgba(255,255,255,.08);
+}
+
+.user-info { display: flex; align-items: center; gap: 10px; }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--gold);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; font-weight: 700; color: var(--ink);
+  flex-shrink: 0;
+}
+.user-name { font-size: 0.78rem; color: rgba(255,255,255,.7); font-weight: 500; }
+.user-role { font-size: 0.65rem; color: rgba(255,255,255,.3); }
+
+/* ─── MAIN CONTENT ─── */
+.main-wrap {
+  margin-left: 220px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── TOP BAR ─── */
+.topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: var(--shadow-sm);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.breadcrumb-sep { color: var(--border2); }
+.breadcrumb-current { color: var(--ink); font-weight: 500; }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+.flags-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.flag-item { font-size: 1.1rem; line-height: 1; }
+.flag-sep  { color: var(--border2); font-size: 0.75rem; }
+
+.topbar-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 6px;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--ink2);
+}
+.topbar-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.topbar-date {
+  font-size: 0.75rem;
+  color: var(--muted);
+  padding: 4px 12px;
+  background: var(--warm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.btn-primary {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 7px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.15s;
+  box-shadow: 0 1px 3px rgba(27,58,92,.3);
+}
+.btn-primary:hover { background: var(--accent2); transform: translateY(-1px); box-shadow: 0 4px 10px rgba(27,58,92,.3); }
+
+/* ─── PAGE CONTENT ─── */
+.content {
+  flex: 1;
+  padding: 32px;
+}
+
+/* ─── PAGE HEADER ─── */
+.page-heading {
+  margin-bottom: 28px;
+}
+
+.page-heading h1 {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--ink);
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+
+.page-heading p {
+  font-size: 0.82rem;
+  color: var(--muted);
+  font-weight: 400;
+}
+
+/* ─── KPI CARDS ─── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 12px;
+  margin-bottom: 28px;
+}
+
+.kpi-card {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.kpi-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.kpi-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+
+.kpi-card.c-total::after   { background: var(--accent); }
+.kpi-card.c-pending::after { background: var(--amber); }
+.kpi-card.c-prog::after    { background: var(--blue); }
+.kpi-card.c-block::after   { background: var(--red); }
+.kpi-card.c-done::after    { background: var(--green); }
+.kpi-card.c-high::after    { background: var(--gold); }
+
+.kpi-icon {
+  font-size: 1.1rem;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.kpi-val {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.kpi-card.c-total .kpi-val   { color: var(--accent); }
+.kpi-card.c-pending .kpi-val { color: var(--amber); }
+.kpi-card.c-prog .kpi-val    { color: var(--blue); }
+.kpi-card.c-block .kpi-val   { color: var(--red); }
+.kpi-card.c-done .kpi-val    { color: var(--green); }
+.kpi-card.c-high .kpi-val    { color: var(--gold); }
+
+.kpi-lbl {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ─── PANEL ─── */
+.panel {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--warm);
+  flex-wrap: wrap;
+}
+
+.search-field {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-field input {
+  width: 100%;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink);
+  padding: 7px 12px 7px 32px;
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  outline: none;
+  border-radius: var(--radius);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.search-field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(27,58,92,.08);
+}
+
+.search-field::before {
+  content: '⌕';
+  position: absolute;
+  left: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--light);
+  font-size: 1rem;
+  pointer-events: none;
+}
+
+.filter-select {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  padding: 7px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  outline: none;
+  cursor: pointer;
+  border-radius: var(--radius);
+  min-width: 130px;
+  transition: border-color 0.15s;
+}
+
+.filter-select:focus { border-color: var(--accent); }
+
+.view-seg {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.seg-btn {
+  background: #fff;
+  border: none;
+  color: var(--muted);
+  padding: 7px 14px;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: all 0.15s;
+  border-right: 1px solid var(--border);
+}
+
+.seg-btn:last-child { border-right: none; }
+.seg-btn.active { background: var(--accent); color: #fff; }
+.seg-btn:not(.active):hover { background: var(--warm); color: var(--ink); }
+
+/* ─── TABLE ─── */
+.table-scroll { overflow-x: auto; }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+}
+
+thead th {
+  background: #fff;
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 10px 16px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 2px solid var(--border);
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.15s;
+}
+
+thead th:hover { color: var(--accent); }
+
+tbody tr {
+  border-bottom: 1px solid var(--warm);
+  transition: background 0.1s;
+}
+
+tbody tr:hover { background: var(--cream); }
+tbody tr:last-child { border-bottom: none; }
+
+td {
+  padding: 11px 16px;
+  vertical-align: middle;
+  color: var(--ink2);
+}
+
+/* Group header */
+.grp-row td {
+  background: var(--warm);
+  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  padding: 7px 16px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.id-col {
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--light);
+  letter-spacing: 0.04em;
+}
+
+/* Status pill */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.pill-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.pill.st-pending     { background: var(--amber-bg); color: var(--amber); }
+.pill.st-progress    { background: var(--blue-bg);  color: var(--blue); }
+.pill.st-done        { background: var(--green-bg); color: var(--green); }
+.pill.st-blocked     { background: var(--red-bg);   color: var(--red); }
+.pill.st-not-started { background: var(--gray-bg);  color: var(--muted); }
+
+.pill.st-pending .pill-dot { animation: blink 2s ease infinite; }
+
+/* Priority tag */
+.prio {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--radius);
+}
+
+.prio.pr-high   { background: var(--red-bg);   color: var(--red); }
+.prio.pr-medium { background: var(--amber-bg); color: var(--amber); }
+.prio.pr-low    { background: var(--green-bg); color: var(--green); }
+
+/* Assignee */
+.asgn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.av {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.62rem; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.av-dudu    { background: #E8F5ED; color: #2A5C3F; }
+.av-default { background: var(--warm); color: var(--ink); }
+
+.task-title {
+  max-width: 260px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.notes-cell {
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-style: italic;
+}
+
+.date-cell { font-size: 0.78rem; color: var(--muted); white-space: nowrap; }
+.date-overdue { color: var(--red); font-weight: 600; }
+.date-today   { color: var(--amber); font-weight: 600; }
+
+/* Actions */
+.row-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+tbody tr:hover .row-actions { opacity: 1; }
+
+.act-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 4px 8px;
+  font-size: 0.72rem;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.15s;
+  font-family: var(--font-sans);
+}
+
+.act-btn:hover         { background: var(--warm); color: var(--ink); }
+.act-btn.done:hover    { background: var(--green-bg); color: var(--green); border-color: var(--green); }
+.act-btn.edit:hover    { background: var(--blue-bg);  color: var(--blue);  border-color: var(--blue); }
+.act-btn.del:hover     { background: var(--red-bg);   color: var(--red);   border-color: var(--red); }
+
+/* Empty */
+.empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--light);
+}
+.empty-icon { font-size: 2.5rem; margin-bottom: 12px; opacity: 0.4; }
+.empty p { font-size: 0.85rem; }
+
+/* Pagination */
+.panel-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--warm);
+}
+
+.pg-info { font-size: 0.75rem; color: var(--muted); }
+
+.pg-btns { display: flex; gap: 4px; }
+
+.pg-btn {
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius);
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+}
+
+.pg-btn:hover { border-color: var(--accent); color: var(--accent); }
+.pg-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+/* ─── MODAL ─── */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(26,23,20,.45);
+  backdrop-filter: blur(6px);
+  z-index: 200;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.overlay.open { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 540px;
+  box-shadow: var(--shadow-lg);
+  transform: translateY(16px) scale(0.99);
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  overflow: hidden;
+}
+
+.overlay.open .modal { transform: none; }
+
+.modal-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--warm);
+}
+
+.modal-head-text h2 {
+  font-family: var(--font-serif);
+  font-size: 1.25rem;
+  color: var(--ink);
+  margin-bottom: 2px;
+}
+
+.modal-head-text p {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.modal-close {
+  background: none; border: none;
+  color: var(--light); font-size: 1.1rem;
+  cursor: pointer; padding: 2px; line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--ink); }
+
+.modal-body { padding: 24px 28px; }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.form-row.one { grid-template-columns: 1fr; }
+
+.f-group { display: flex; flex-direction: column; gap: 5px; }
+
+.f-label {
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.f-group input,
+.f-group select,
+.f-group textarea {
+  background: var(--cream);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  padding: 8px 10px;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  outline: none;
+  border-radius: var(--radius);
+  width: 100%;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.f-group textarea { resize: vertical; min-height: 72px; }
+
+.f-group input:focus,
+.f-group select:focus,
+.f-group textarea:focus {
+  border-color: var(--accent);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(27,58,92,.07);
+}
+
+.modal-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 28px;
+  border-top: 1px solid var(--border);
+  background: var(--warm);
+}
+
+.btn-ghost {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  padding: 7px 16px;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: var(--radius);
+  transition: all 0.15s;
+}
+
+.btn-ghost:hover { border-color: var(--ink2); color: var(--ink); }
+
+/* ─── TOAST ─── */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 18px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  display: flex; align-items: center; gap: 8px;
+  z-index: 300;
+  transform: translateY(12px);
+  opacity: 0;
+  transition: all 0.25s cubic-bezier(.34,1.56,.64,1);
+  pointer-events: none;
+}
+
+.toast.show { transform: none; opacity: 1; }
+.toast-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); flex-shrink: 0; }
+.toast.err .toast-dot { background: #e57373; }
+
+/* ─── ANIMATIONS ─── */
+@keyframes blink { 0%,100%{ opacity:1; } 50%{ opacity:0.3; } }
+@keyframes fadeUp { from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+
+tbody tr { animation: fadeUp 0.25s ease both; }
+
+/* ─── BUSINESS TABS ─── */
+.biz-tabs-wrap {
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.biz-tabs-wrap::-webkit-scrollbar { display: none; }
+
+.biz-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  white-space: nowrap;
+  transition: all 0.15s;
+  background: none;
+  border-top: none;
+  border-left: none;
+  border-right: none;
+  font-family: var(--font-sans);
+  position: relative;
+}
+
+.biz-tab:hover { color: var(--ink); background: var(--warm); }
+
+.biz-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+  background: #fff;
+}
+
+.biz-tab-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.biz-tab-count {
+  background: var(--warm);
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  min-width: 18px;
+  text-align: center;
+}
+
+.biz-tab.active .biz-tab-count {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.biz-tab-all .biz-tab-dot { background: var(--accent); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+  .sidebar { width: 0; overflow: hidden; }
+  .main-wrap { margin-left: 0; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-diamond"><span>3B</span></div>
+      <div class="logo-name">Grupo 3B</div>
+    </div>
+    <div class="logo-sub">Orlando, FL &nbsp;🇧🇷&nbsp;🇺🇸</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active">
+        <span class="nav-icon">◈</span> Pendências
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◻</span> Equipe
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◫</span> Relatórios
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Operações</div>
+      <div class="nav-item">
+        <span class="nav-icon">◧</span> Frota
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◨</span> Financeiro
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◩</span> Documentos
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="user-avatar">FB</div>
+      <div>
+        <div class="user-name">Fabiano Berger</div>
+        <div class="user-role">Gestor · Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span>Grupo 3B</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Gestão de Pendências</span>
+    </div>
+    <div class="topbar-right">
+      <div class="flags-wrap">
+        <span title="Brasil" class="flag-item">🇧🇷</span>
+        <span class="flag-sep">·</span>
+        <span title="Estados Unidos" class="flag-item">🇺🇸</span>
+      </div>
+      <div class="topbar-date" id="headerDate"></div>
+      <div class="topbar-user">
+        <div class="topbar-avatar">FB</div>
+        <span>Fabiano Berger</span>
+      </div>
+      <button class="btn-primary" onclick="openModal()">
+        <span>+</span> Nova Tarefa
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <div class="page-heading">
+      <h1>Gestão de Pendências</h1>
+      <p>Controle operacional centralizado · Grupo 3B</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card c-total">
+        <span class="kpi-icon">◈</span>
+        <div class="kpi-val" id="kpi-total">0</div>
+        <div class="kpi-lbl">Total</div>
+      </div>
+      <div class="kpi-card c-pending">
+        <span class="kpi-icon">◷</span>
+        <div class="kpi-val" id="kpi-pending">0</div>
+        <div class="kpi-lbl">Pendente</div>
+      </div>
+      <div class="kpi-card c-prog">
+        <span class="kpi-icon">◑</span>
+        <div class="kpi-val" id="kpi-prog">0</div>
+        <div class="kpi-lbl">Em Andamento</div>
+      </div>
+      <div class="kpi-card c-block">
+        <span class="kpi-icon">◉</span>
+        <div class="kpi-val" id="kpi-block">0</div>
+        <div class="kpi-lbl">Bloqueado</div>
+      </div>
+      <div class="kpi-card c-done">
+        <span class="kpi-icon">◎</span>
+        <div class="kpi-val" id="kpi-done">0</div>
+        <div class="kpi-lbl">Concluído</div>
+      </div>
+      <div class="kpi-card c-high">
+        <span class="kpi-icon">◆</span>
+        <div class="kpi-val" id="kpi-high">0</div>
+        <div class="kpi-lbl">Alta Prioridade</div>
+      </div>
+    </div>
+
+    <!-- BUSINESS TABS -->
+    <div class="biz-tabs-wrap" id="bizTabs"></div>
+
+    <!-- PANEL -->
+    <div class="panel">
+      <div class="panel-toolbar">
+        <div class="search-field">
+          <input type="text" id="searchInput" placeholder="Buscar tarefa, responsável, observação…" oninput="render()">
+        </div>
+        <select class="filter-select" id="fStatus" onchange="render()">
+          <option value="">Todos os Status</option>
+          <option value="pending">Pendente</option>
+          <option value="progress">Em Andamento</option>
+          <option value="blocked">Bloqueado</option>
+          <option value="done">Concluído</option>
+          <option value="not-started">Não Iniciado</option>
+        </select>
+        <select class="filter-select" id="fPrio" onchange="render()">
+          <option value="">Todas Prioridades</option>
+          <option value="high">Alta</option>
+          <option value="medium">Média</option>
+          <option value="low">Baixa</option>
+        </select>
+        <select class="filter-select" id="fAsgn" onchange="render()">
+          <option value="">Todos Responsáveis</option>
+        </select>
+        <div class="view-seg">
+          <button class="seg-btn active" id="vt-list"  onclick="setView('list')">Lista</button>
+          <button class="seg-btn"        id="vt-group" onclick="setView('group')">Por Pessoa</button>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('id')" style="width:50px">#</th>
+              <th onclick="sortBy('title')">Tarefa</th>
+              <th onclick="sortBy('status')">Status</th>
+              <th onclick="sortBy('priority')">Prioridade</th>
+              <th onclick="sortBy('assignee')">Responsável</th>
+              <th onclick="sortBy('opened')">Abertura</th>
+              <th onclick="sortBy('due')">Prazo</th>
+              <th>Observações</th>
+              <th style="width:100px">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel-footer">
+        <span class="pg-info" id="pgInfo"></span>
+        <div class="pg-btns" id="pgBtns"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main-wrap -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-text">
+        <h2 id="modalTitle">Nova Tarefa</h2>
+        <p>Preencha os dados da pendência</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Negócio *</label>
+          <select id="f-biz">
+            <option value="3B Logistics EUA">3B Logistics EUA</option>
+            <option value="3B Logística Brasil">3B Logística Brasil</option>
+            <option value="3B &amp; Moufarrege">3B &amp; Moufarrege</option>
+            <option value="Particulares">Particulares</option>
+            <option value="Giovanella EUA">Giovanella EUA</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Título da Tarefa *</label>
+          <input type="text" id="f-title" placeholder="Descreva a pendência…">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-group">
+          <label class="f-label">Status</label>
+          <select id="f-status">
+            <option value="pending">Pendente</option>
+            <option value="progress">Em Andamento</option>
+            <option value="blocked">Bloqueado</option>
+            <option value="done">Concluído</option>
+            <option value="not-started">Não Iniciado</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Prioridade</label>
+          <select id="f-prio">
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-group">
+          <label class="f-label">Responsável</label>
+          <input type="text" id="f-asgn" placeholder="Nome do responsável">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Prazo</label>
+          <input type="date" id="f-due">
+        </div>
+      </div>
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Observações</label>
+          <textarea id="f-notes" placeholder="Detalhes adicionais…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveTask()">Salvar Tarefa</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ── BUSINESSES ────────────────────────────────────────
+const BUSINESSES = [
+  { id: 'all',               label: 'Todos',              color: '#1B3A5C' },
+  { id: '3B Logistics EUA',  label: '3B Logistics EUA',   color: '#2A5C3F' },
+  { id: '3B Logística Brasil', label: '3B Logística Brasil', color: '#1B3A5C' },
+  { id: '3B & Moufarrege',   label: '3B & Moufarrege',    color: '#7A5C1E' },
+  { id: 'Particulares',      label: 'Particulares',       color: '#5C2A2A' },
+  { id: 'Giovanella EUA',    label: 'Giovanella EUA',     color: '#3A2A5C' },
+  { id: 'Outros',            label: 'Outros',             color: '#3D3830' },
+];
+
+let activeBiz = 'all';
+
+function renderBizTabs() {
+  const wrap = document.getElementById('bizTabs');
+  wrap.innerHTML = BUSINESSES.map(b => {
+    const cnt = b.id === 'all'
+      ? tasks.length
+      : tasks.filter(t => t.biz === b.id).length;
+    return `<button
+      class="biz-tab ${b.id === 'all' ? 'biz-tab-all' : ''} ${activeBiz === b.id ? 'active' : ''}"
+      onclick="selectBiz('${b.id}')"
+    >
+      <span class="biz-tab-dot" style="background:${b.color}"></span>
+      ${b.label}
+      <span class="biz-tab-count">${cnt}</span>
+    </button>`;
+  }).join('');
+}
+
+function selectBiz(id) {
+  activeBiz = id;
+  page = 1;
+  render();
+}
+
+// ── DATA ──────────────────────────────────────────────
+const SL = { pending:'Pendente', progress:'Em Andamento', done:'Concluído', blocked:'Bloqueado', 'not-started':'Não Iniciado' };
+const PL = { high:'Alta', medium:'Média', low:'Baixa' };
+
+function avClass(name) {
+  const n = (name||'').toLowerCase();
+  if (n === 'dudu') return 'av-dudu';
+  return 'av-default';
+}
+
+let tasks = [
+  {id:1,  biz:'3B Logistics EUA', assignee:'Dudu',   title:'Liberação dos tablets',                           status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:2,  biz:'3B Logistics EUA', assignee:'Dudu',   title:'Atualizar os próximos 5 veículos (títulos)',       status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:'Trucks 01, 02, 03 — quais mais? Precisamos dos títulos'},
+  {id:3,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'RTS Factory',                                     status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:4,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'RTS cartão combustível',                          status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:'Cartões a caminho do Grupo 3B Orlando'},
+  {id:5,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'Configuração do Prespass',                        status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:6,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Seguro de carga',                                 status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:'Previsão de liberação hoje — assunto URGENTE'},
+  {id:7,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'Confirmação do seguro dos motoristas por e-mail', status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:8,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Inspeção dos trailers',                           status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:9,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Atualizar os próximos 5 trailers',                status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:10, biz:'3B Logistics EUA', assignee:'Dudu', title:'Atualizar planilha com motoristas interessados',  status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:11, biz:'3B Logistics EUA', assignee:'Dudu', title:'Melhorar planilhas financeiras',                  status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:12, biz:'3B Logistics EUA', assignee:'Dudu',     title:'Acesso ao QuickBooks',                            status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+];
+
+let nextId=13, sortField='id', sortDir=1, editId=null, page=1, viewMode='list';
+const PER = 10;
+
+// ── FILTER ────────────────────────────────────────────
+function filtered() {
+  const s  = document.getElementById('searchInput').value.toLowerCase();
+  const fs = document.getElementById('fStatus').value;
+  const fp = document.getElementById('fPrio').value;
+  const fa = document.getElementById('fAsgn').value;
+  return tasks.filter(t => {
+    if (activeBiz !== 'all' && t.biz !== activeBiz) return false;
+    if (fs && t.status   !== fs) return false;
+    if (fp && t.priority !== fp) return false;
+    if (fa && t.assignee !== fa) return false;
+    if (s  && !`${t.id} ${t.title} ${t.assignee} ${t.notes}`.toLowerCase().includes(s)) return false;
+    return true;
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────
+function render() {
+  renderBizTabs();
+  updateKPIs();
+  updateAsgnFilter();
+  viewMode === 'group' ? renderGrouped() : renderList();
+}
+
+function updateAsgnFilter() {
+  const sel = document.getElementById('fAsgn');
+  const current = sel.value;
+  const names = [...new Set(tasks.map(t => t.assignee).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Todos Responsáveis</option>' +
+    names.map(n => `<option value="${n}" ${n === current ? 'selected' : ''}>${n}</option>`).join('');
+}
+
+function updateKPIs() {
+  const scope = activeBiz === 'all' ? tasks : tasks.filter(t => t.biz === activeBiz);
+  document.getElementById('kpi-total').textContent   = scope.length;
+  document.getElementById('kpi-pending').textContent = scope.filter(t=>t.status==='pending').length;
+  document.getElementById('kpi-prog').textContent    = scope.filter(t=>t.status==='progress').length;
+  document.getElementById('kpi-block').textContent   = scope.filter(t=>t.status==='blocked').length;
+  document.getElementById('kpi-done').textContent    = scope.filter(t=>t.status==='done').length;
+  document.getElementById('kpi-high').textContent    = scope.filter(t=>t.priority==='high'&&t.status!=='done').length;
+}
+
+function renderList() {
+  let data = filtered();
+  data.sort((a,b) => {
+    const va = String(a[sortField]||'').toLowerCase();
+    const vb = String(b[sortField]||'').toLowerCase();
+    return va < vb ? -sortDir : va > vb ? sortDir : 0;
+  });
+
+  const tot = data.length, tp = Math.max(1, Math.ceil(tot/PER));
+  if (page > tp) page = 1;
+  const s  = (page-1)*PER;
+  const pg = data.slice(s, s+PER);
+
+  document.getElementById('pgInfo').textContent =
+    `Exibindo ${tot===0?0:s+1}–${Math.min(s+PER,tot)} de ${tot} tarefa${tot!==1?'s':''}`;
+
+  buildPager(tp);
+
+  const tbody = document.getElementById('tableBody');
+  if (!pg.length) { tbody.innerHTML = emptyHTML(); return; }
+  tbody.innerHTML = pg.map((t,i) => rowHTML(t,i)).join('');
+}
+
+function renderGrouped() {
+  const data = filtered();
+  const grp  = {};
+  data.forEach(t => { (grp[t.assignee] = grp[t.assignee]||[]).push(t); });
+
+  const tot = data.length;
+  document.getElementById('pgInfo').textContent =
+    `${tot} tarefa${tot!==1?'s':''} · ${Object.keys(grp).length} responsável(is)`;
+  document.getElementById('pgBtns').innerHTML = '';
+
+  const tbody = document.getElementById('tableBody');
+  if (!data.length) { tbody.innerHTML = emptyHTML(); return; }
+
+  const ORDER = ['Dudu'];
+  const keys  = [...ORDER.filter(k=>grp[k]), ...Object.keys(grp).filter(k=>!ORDER.includes(k))];
+  let html = '';
+  keys.forEach(asgn => {
+    const cnt = grp[asgn].length;
+    const ac  = avClass(asgn);
+    html += `<tr class="grp-row"><td colspan="9">
+      <span class="av ${ac}" style="display:inline-flex;margin-right:8px;vertical-align:middle">${asgn[0]}</span>
+      ${asgn} &nbsp;·&nbsp; ${cnt} tarefa${cnt!==1?'s':''}
+    </td></tr>`;
+    grp[asgn].forEach((t,i) => { html += rowHTML(t,i); });
+  });
+  tbody.innerHTML = html;
+}
+
+function buildPager(tp) {
+  const pb = document.getElementById('pgBtns');
+  pb.innerHTML = '';
+  for (let i=1; i<=tp; i++) {
+    const b = document.createElement('button');
+    b.className = 'pg-btn' + (i===page?' active':'');
+    b.textContent = i;
+    b.onclick = () => { page=i; render(); };
+    pb.appendChild(b);
+  }
+}
+
+function rowHTML(t, i) {
+  const today = new Date().toISOString().split('T')[0];
+  let dateCls = 'date-cell', dateVal = t.due || '—';
+  if (t.due && t.status !== 'done') {
+    if      (t.due < today)  dateCls = 'date-cell date-overdue';
+    else if (t.due === today) dateCls = 'date-cell date-today';
+  }
+
+  const notesHtml = t.notes
+    ? `<span title="${t.notes.replace(/"/g,"'")}" class="notes-cell">${t.notes.length>40?t.notes.slice(0,38)+'…':t.notes}</span>`
+    : `<span style="color:var(--border2)">—</span>`;
+
+  const doneBtn = t.status!=='done'
+    ? `<button class="act-btn done" onclick="markDone(${t.id})" title="Concluir">✓</button>` : '';
+
+  return `<tr style="animation-delay:${i*.03}s">
+    <td class="id-col">${t.id}</td>
+    <td><span class="task-title" title="${t.title}">${t.title}</span></td>
+    <td><span class="pill st-${t.status}"><span class="pill-dot"></span>${SL[t.status]||t.status}</span></td>
+    <td><span class="prio pr-${t.priority}">${PL[t.priority]||t.priority}</span></td>
+    <td><div class="asgn"><div class="av ${avClass(t.assignee)}">${t.assignee[0]}</div>${t.assignee}</div></td>
+    <td class="date-cell">${t.opened||'—'}</td>
+    <td class="${dateCls}">${dateVal}</td>
+    <td>${notesHtml}</td>
+    <td><div class="row-actions">
+      ${doneBtn}
+      <button class="act-btn edit" onclick="editTask(${t.id})" title="Editar">✎</button>
+      <button class="act-btn del"  onclick="delTask(${t.id})"  title="Remover">✕</button>
+    </div></td>
+  </tr>`;
+}
+
+function emptyHTML() {
+  return `<tr><td colspan="9"><div class="empty">
+    <div class="empty-icon">◻</div>
+    <p>Nenhuma tarefa encontrada</p>
+  </div></td></tr>`;
+}
+
+function sortBy(f) {
+  if (sortField===f) sortDir*=-1; else { sortField=f; sortDir=1; }
+  render();
+}
+
+function setView(v) {
+  viewMode = v;
+  document.getElementById('vt-list').classList.toggle('active', v==='list');
+  document.getElementById('vt-group').classList.toggle('active', v==='group');
+  render();
+}
+
+// ── MODAL ────────────────────────────────────────────
+function openModal(id=null) {
+  editId = id;
+  document.getElementById('modalTitle').textContent = id ? 'Editar Tarefa' : 'Nova Tarefa';
+  if (id) {
+    const t = tasks.find(x=>x.id===id);
+    document.getElementById('f-biz').value    = t.biz || '3B Logistics EUA';
+    document.getElementById('f-title').value  = t.title;
+    document.getElementById('f-status').value = t.status;
+    document.getElementById('f-prio').value   = t.priority;
+    document.getElementById('f-asgn').value   = t.assignee;
+    document.getElementById('f-due').value    = t.due;
+    document.getElementById('f-notes').value  = t.notes;
+  } else {
+    ['f-title','f-asgn','f-due','f-notes'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('f-biz').value    = activeBiz !== 'all' ? activeBiz : '3B Logistics EUA';
+    document.getElementById('f-status').value = 'pending';
+    document.getElementById('f-prio').value   = 'medium';
+  }
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('overlay').classList.remove('open');
+  editId = null;
+}
+
+function saveTask() {
+  const title = document.getElementById('f-title').value.trim();
+  if (!title) { showToast('Título é obrigatório', true); return; }
+  const data = {
+    biz:      document.getElementById('f-biz').value,
+    title,
+    status:   document.getElementById('f-status').value,
+    priority: document.getElementById('f-prio').value,
+    assignee: document.getElementById('f-asgn').value || 'Não atribuído',
+    due:      document.getElementById('f-due').value,
+    notes:    document.getElementById('f-notes').value,
+  };
+  if (editId) {
+    const i = tasks.findIndex(t=>t.id===editId);
+    tasks[i] = {...tasks[i], ...data};
+    showToast('Tarefa atualizada');
+  } else {
+    data.id     = nextId++;
+    data.opened = new Date().toLocaleDateString('pt-BR');
+    tasks.push(data);
+    showToast('Tarefa criada com sucesso');
+  }
+  save();
+  closeModal();
+  render();
+}
+
+function editTask(id)  { openModal(id); }
+function markDone(id)  { const t=tasks.find(x=>x.id===id); if(t){t.status='done'; save(); render(); showToast('Tarefa concluída');} }
+function delTask(id)   { if(!confirm('Remover esta tarefa?')) return; tasks=tasks.filter(t=>t.id!==id); save(); render(); showToast('Tarefa removida'); }
+
+// ── TOAST ────────────────────────────────────────────
+let toastTimer;
+function showToast(msg, err=false) {
+  const el = document.getElementById('toast');
+  el.classList.toggle('err', err);
+  document.getElementById('toastMsg').textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>el.classList.remove('show'), 3000);
+}
+
+// ── PERSISTÊNCIA (localStorage) ──────────────────────
+const STORAGE_KEY = 'grupo3b_tasks_v1';
+const STORAGE_ID  = 'grupo3b_nextid_v1';
+
+const DEFAULT_TASKS = [
+  {id:1,  biz:'3B Logistics EUA', assignee:'Dudu',   title:'Liberação dos tablets',                           status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:2,  biz:'3B Logistics EUA', assignee:'Dudu',   title:'Atualizar os próximos 5 veículos (títulos)',       status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:'Trucks 01, 02, 03 — quais mais? Precisamos dos títulos'},
+  {id:3,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'RTS Factory',                                     status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:4,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'RTS cartão combustível',                          status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:'Cartões a caminho do Grupo 3B Orlando'},
+  {id:5,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'Configuração do Prespass',                        status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:6,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Seguro de carga',                                 status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:'Previsão de liberação hoje — assunto URGENTE'},
+  {id:7,  biz:'3B Logistics EUA', assignee:'Dudu',     title:'Confirmação do seguro dos motoristas por e-mail', status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:8,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Inspeção dos trailers',                           status:'pending', priority:'high',   opened:'22/04/2025', due:'', notes:''},
+  {id:9,  biz:'3B Logistics EUA', assignee:'Dudu', title:'Atualizar os próximos 5 trailers',                status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:10, biz:'3B Logistics EUA', assignee:'Dudu', title:'Atualizar planilha com motoristas interessados',  status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:11, biz:'3B Logistics EUA', assignee:'Dudu', title:'Melhorar planilhas financeiras',                  status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+  {id:12, biz:'3B Logistics EUA', assignee:'Dudu',     title:'Acesso ao QuickBooks',                            status:'pending', priority:'medium', opened:'22/04/2025', due:'', notes:''},
+];
+
+function save() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+    localStorage.setItem(STORAGE_ID,  JSON.stringify(nextId));
+  } catch(e) { console.warn('Erro ao salvar:', e); }
+}
+
+function load() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    const savedId = localStorage.getItem(STORAGE_ID);
+    if (saved) {
+      tasks  = JSON.parse(saved);
+      nextId = savedId ? JSON.parse(savedId) : Math.max(...tasks.map(t=>t.id)) + 1;
+    }
+    // Se não há dados salvos, usa os padrão e salva
+    else { tasks = DEFAULT_TASKS; nextId = 13; save(); }
+  } catch(e) { tasks = DEFAULT_TASKS; nextId = 13; }
+}
+
+// ── INIT ─────────────────────────────────────────────
+document.getElementById('overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('overlay')) closeModal();
+});
+
+document.getElementById('headerDate').textContent =
+  new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+load();
+render();
+</script>
+</body>
+</html>

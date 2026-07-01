@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grupo 3B — Gestão de Pendências</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay open" id="loginOverlay">
+  <div class="login-box">
+    <div class="logo-mark" style="justify-content:center;margin-bottom:6px">
+      <div class="logo-diamond"><span>3B</span></div>
+      <div class="logo-name" style="color:var(--ink)">Grupo 3B</div>
+    </div>
+    <p class="login-sub">Acesso à Gestão de Pendências</p>
+    <form id="loginForm">
+      <div class="f-group">
+        <label class="f-label">E-mail</label>
+        <input type="email" id="login-email" required autocomplete="username">
+      </div>
+      <div class="f-group" style="margin-top:12px">
+        <label class="f-label">Senha</label>
+        <input type="password" id="login-pass" required autocomplete="current-password">
+      </div>
+      <button class="btn-primary" type="submit" style="width:100%;justify-content:center;margin-top:20px">Entrar</button>
+      <p class="login-error" id="loginError"></p>
+    </form>
+  </div>
+</div>
+
+<div id="appRoot" style="display:none">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-diamond"><span>3B</span></div>
+      <div class="logo-name">Grupo 3B</div>
+    </div>
+    <div class="logo-sub">Orlando, FL &nbsp;🇧🇷&nbsp;🇺🇸</div>
+  </div>
+
+  <nav class="sidebar-nav">
+    <div class="nav-section">
+      <div class="nav-label">Principal</div>
+      <div class="nav-item active">
+        <span class="nav-icon">◈</span> Pendências
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◻</span> Equipe
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◫</span> Relatórios
+      </div>
+    </div>
+    <div class="nav-section">
+      <div class="nav-label">Operações</div>
+      <div class="nav-item">
+        <span class="nav-icon">◧</span> Frota
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◨</span> Financeiro
+      </div>
+      <div class="nav-item">
+        <span class="nav-icon">◩</span> Documentos
+      </div>
+    </div>
+  </nav>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div style="display:flex;align-items:center;gap:10px">
+        <div class="user-avatar">3B</div>
+        <div>
+          <div class="user-name">Equipe Grupo 3B</div>
+          <div class="user-role">Acesso compartilhado</div>
+        </div>
+      </div>
+      <button class="logout-btn" onclick="logout()">Sair</button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<div class="main-wrap">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <div class="topbar-left">
+      <span>Grupo 3B</span>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-current">Gestão de Pendências</span>
+    </div>
+    <div class="topbar-right">
+      <div class="flags-wrap">
+        <span title="Brasil" class="flag-item">🇧🇷</span>
+        <span class="flag-sep">·</span>
+        <span title="Estados Unidos" class="flag-item">🇺🇸</span>
+      </div>
+      <div class="topbar-date" id="headerDate"></div>
+      <button class="btn-primary" onclick="openModal()">
+        <span>+</span> Nova Tarefa
+      </button>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <div class="page-heading">
+      <h1>Gestão de Pendências</h1>
+      <p>Controle operacional centralizado · Grupo 3B</p>
+    </div>
+
+    <!-- KPIs -->
+    <div class="kpi-grid">
+      <div class="kpi-card c-total">
+        <span class="kpi-icon">◈</span>
+        <div class="kpi-val" id="kpi-total">0</div>
+        <div class="kpi-lbl">Total</div>
+      </div>
+      <div class="kpi-card c-pending">
+        <span class="kpi-icon">◷</span>
+        <div class="kpi-val" id="kpi-pending">0</div>
+        <div class="kpi-lbl">Pendente</div>
+      </div>
+      <div class="kpi-card c-prog">
+        <span class="kpi-icon">◑</span>
+        <div class="kpi-val" id="kpi-prog">0</div>
+        <div class="kpi-lbl">Em Andamento</div>
+      </div>
+      <div class="kpi-card c-block">
+        <span class="kpi-icon">◉</span>
+        <div class="kpi-val" id="kpi-block">0</div>
+        <div class="kpi-lbl">Bloqueado</div>
+      </div>
+      <div class="kpi-card c-done">
+        <span class="kpi-icon">◎</span>
+        <div class="kpi-val" id="kpi-done">0</div>
+        <div class="kpi-lbl">Concluído</div>
+      </div>
+      <div class="kpi-card c-high">
+        <span class="kpi-icon">◆</span>
+        <div class="kpi-val" id="kpi-high">0</div>
+        <div class="kpi-lbl">Alta Prioridade</div>
+      </div>
+    </div>
+
+    <!-- BUSINESS TABS -->
+    <div class="biz-tabs-wrap" id="bizTabs"></div>
+
+    <!-- PANEL -->
+    <div class="panel">
+      <div class="panel-toolbar">
+        <div class="search-field">
+          <input type="text" id="searchInput" placeholder="Buscar tarefa, responsável, observação…" oninput="render()">
+        </div>
+        <select class="filter-select" id="fStatus" onchange="render()">
+          <option value="">Todos os Status</option>
+          <option value="pending">Pendente</option>
+          <option value="progress">Em Andamento</option>
+          <option value="blocked">Bloqueado</option>
+          <option value="done">Concluído</option>
+          <option value="not-started">Não Iniciado</option>
+        </select>
+        <select class="filter-select" id="fPrio" onchange="render()">
+          <option value="">Todas Prioridades</option>
+          <option value="high">Alta</option>
+          <option value="medium">Média</option>
+          <option value="low">Baixa</option>
+        </select>
+        <select class="filter-select" id="fAsgn" onchange="render()">
+          <option value="">Todos Responsáveis</option>
+        </select>
+        <div class="view-seg">
+          <button class="seg-btn active" id="vt-list"  onclick="setView('list')">Lista</button>
+          <button class="seg-btn"        id="vt-group" onclick="setView('group')">Por Pessoa</button>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th onclick="sortBy('id')" style="width:50px">#</th>
+              <th onclick="sortBy('title')">Tarefa</th>
+              <th onclick="sortBy('status')">Status</th>
+              <th onclick="sortBy('priority')">Prioridade</th>
+              <th onclick="sortBy('assignee')">Responsável</th>
+              <th onclick="sortBy('opened')">Abertura</th>
+              <th onclick="sortBy('due')">Prazo</th>
+              <th>Observações</th>
+              <th style="width:100px">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+
+      <div class="panel-footer">
+        <span class="pg-info" id="pgInfo"></span>
+        <div class="pg-btns" id="pgBtns"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main-wrap -->
+
+<!-- MODAL -->
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-text">
+        <h2 id="modalTitle">Nova Tarefa</h2>
+        <p>Preencha os dados da pendência</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Negócio *</label>
+          <select id="f-biz">
+            <option value="3B Logistics EUA">3B Logistics EUA</option>
+            <option value="3B Logística Brasil">3B Logística Brasil</option>
+            <option value="3B &amp; Moufarrege">3B &amp; Moufarrege</option>
+            <option value="Particulares">Particulares</option>
+            <option value="Giovanella EUA">Giovanella EUA</option>
+            <option value="Outros">Outros</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Título da Tarefa *</label>
+          <input type="text" id="f-title" placeholder="Descreva a pendência…">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-group">
+          <label class="f-label">Status</label>
+          <select id="f-status">
+            <option value="pending">Pendente</option>
+            <option value="progress">Em Andamento</option>
+            <option value="blocked">Bloqueado</option>
+            <option value="done">Concluído</option>
+            <option value="not-started">Não Iniciado</option>
+          </select>
+        </div>
+        <div class="f-group">
+          <label class="f-label">Prioridade</label>
+          <select id="f-prio">
+            <option value="high">Alta</option>
+            <option value="medium">Média</option>
+            <option value="low">Baixa</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="f-group">
+          <label class="f-label">Responsável</label>
+          <input type="text" id="f-asgn" placeholder="Nome do responsável">
+        </div>
+        <div class="f-group">
+          <label class="f-label">Prazo</label>
+          <input type="date" id="f-due">
+        </div>
+      </div>
+      <div class="form-row one">
+        <div class="f-group">
+          <label class="f-label">Observações</label>
+          <textarea id="f-notes" placeholder="Detalhes adicionais…"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal()">Cancelar</button>
+      <button class="btn-primary" onclick="saveTask()">Salvar Tarefa</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <div class="toast-dot"></div>
+  <span id="toastMsg"></span>
+</div>
+
+</div><!-- /appRoot -->
+
+<script type="module" src="app.js"></script>
+</body>
+</html>
