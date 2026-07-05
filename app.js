@@ -109,6 +109,16 @@ window.logout = async function logout() {
   await supabase.auth.signOut();
 };
 
+// ── SIDEBAR MOBILE ────────────────────────────────────
+function toggleSidebar(force) {
+  const sidebar  = document.getElementById('sidebar');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  const open = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', open);
+  backdrop.classList.toggle('open', open);
+}
+window.toggleSidebar = toggleSidebar;
+
 // ── PERSISTÊNCIA (Supabase) ───────────────────────────
 async function loadTasks() {
   const { data, error } = await supabase.from('tasks').select('*').order('id', { ascending: true });
@@ -375,5 +385,7 @@ document.getElementById('overlay').addEventListener('click', e => {
 
 document.getElementById('headerDate').textContent =
   new Date().toLocaleDateString('pt-BR', {weekday:'long', day:'2-digit', month:'long', year:'numeric'});
+
+window.addEventListener('resize', () => { if (window.innerWidth > 768) toggleSidebar(false); });
 
 initAuth();

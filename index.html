@@ -34,8 +34,11 @@
 
 <div id="appRoot" style="display:none">
 
+<!-- SIDEBAR BACKDROP (mobile) -->
+<div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
+
 <!-- SIDEBAR -->
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
     <div class="logo-mark">
       <div class="logo-diamond"><span>3B</span></div>
@@ -91,6 +94,7 @@
   <!-- TOPBAR -->
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Abrir menu">☰</button>
       <span>Grupo 3B</span>
       <span class="breadcrumb-sep">›</span>
       <span class="breadcrumb-current">Gestão de Pendências</span>
@@ -103,7 +107,7 @@
       </div>
       <div class="topbar-date" id="headerDate"></div>
       <button class="btn-primary" onclick="openModal()">
-        <span>+</span> Nova Tarefa
+        <span>+</span> <span class="btn-label">Nova Tarefa</span>
       </button>
     </div>
   </div>

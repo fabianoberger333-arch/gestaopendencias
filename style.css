@@ -904,12 +904,75 @@ tbody tr { animation: fadeUp 0.25s ease both; }
 
 .biz-tab-all .biz-tab-dot { background: var(--accent); }
 
+/* ─── HAMBURGER (mobile sidebar toggle) ─── */
+.hamburger-btn {
+  display: none;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--ink2);
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 6px 9px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+.hamburger-btn:hover { background: var(--warm); }
+
+.sidebar-backdrop {
+  position: fixed; inset: 0;
+  background: rgba(26,23,20,.45);
+  z-index: 49;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+.sidebar-backdrop.open { opacity: 1; pointer-events: all; }
+
 /* ─── RESPONSIVE ─── */
 @media (max-width: 1100px) {
   .kpi-grid { grid-template-columns: repeat(3, 1fr); }
 }
+
 @media (max-width: 768px) {
-  .sidebar { width: 0; overflow: hidden; }
+  .hamburger-btn { display: inline-flex; align-items: center; justify-content: center; }
+
+  .sidebar {
+    width: 220px;
+    overflow: visible;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow-lg);
+  }
+  .sidebar.open { transform: translateX(0); }
+
   .main-wrap { margin-left: 0; }
+
+  .topbar { padding: 0 16px; }
+  .topbar-right { gap: 8px; }
+  .flags-wrap, .topbar-date { display: none; }
+
+  .content { padding: 20px 16px; }
+  .page-heading h1 { font-size: 1.6rem; }
+
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .kpi-card { padding: 14px 14px; }
+  .kpi-val { font-size: 1.5rem; }
+
+  .panel-toolbar { padding: 12px 14px; }
+  .search-field { min-width: 100%; order: -1; }
+  .filter-select { flex: 1; min-width: 0; }
+
+  .modal { max-width: calc(100% - 24px); margin: 12px; }
+  .modal-body, .modal-head, .modal-foot { padding-left: 18px; padding-right: 18px; }
+  .form-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .view-seg { width: 100%; }
+  .seg-btn { flex: 1; }
+  .btn-label { display: none; }
+  .btn-primary { padding: 7px 12px; }
 }
