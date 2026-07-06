@@ -10,7 +10,7 @@ const BUSINESSES = [
   { id: '3B Logística Brasil', label: '3B Logística Brasil', color: '#1B3A5C' },
   { id: '3B & Moufarrege',   label: '3B & Moufarrege',    color: '#7A5C1E' },
   { id: 'Particulares',      label: 'Particulares',       color: '#5C2A2A' },
-  { id: 'Giovanella EUA',    label: 'Giovanella EUA',     color: '#3A2A5C' },
+  { id: 'FJ Transport',      label: 'FJ Transport',       color: '#3A2A5C' },
   { id: 'Outros',            label: 'Outros',             color: '#3D3830' },
 ];
 
